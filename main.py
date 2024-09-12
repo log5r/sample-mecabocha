@@ -1,25 +1,39 @@
 import CaboCha
 import graphviz
 
-def cabocha_parse(received_sentence):
-    cabocha_parser = CaboCha.Parser()
-    parsed_res =  cabocha_parser.parse(received_sentence)
-    ch_graph = []
-    buf = ""
-    next_i = -1
-    for i in range(parsed_res.size()):
-        t = parsed_res.token(i)
-        buf = t.surface if t.chunk else (buf + t.surface)
-        next_i = t.chunk.link if t.chunk else next_i
-        if i == parsed_res.size() - 1 or parsed_res.token(i + 1).chunk:
-            ch_graph.append({'word': buf, 'to': next_i})
+def cabocha_parse(sentence):
+    # CaboChaのパーサーを初期化
+    parser = CaboCha.Parser()
+    parsed_result = parser.parse(sentence)
 
-    results = []
-    for ch in ch_graph:
-        next_id = ch['to']
-        if next_id >= 0:
-            results.append((ch['word'], ch_graph[next_id]['word']))
-    return results
+    chunk_graph = []
+    current_chunk_text = ""
+    next_chunk_index = -1
+
+    # 解析結果のトークンごとに処理
+    for i in range(parsed_result.size()):
+        token = parsed_result.token(i)
+
+        # チャンクが始まったらバッファに単語を追加
+        if token.chunk:
+            current_chunk_text = token.surface
+            next_chunk_index = token.chunk.link
+        else:
+            current_chunk_text += token.surface
+
+        # チャンクの終わりでチャンク情報を保存
+        if i == parsed_result.size() - 1 or parsed_result.token(i + 1).chunk:
+            chunk_graph.append({'word': current_chunk_text, 'to': next_chunk_index})
+
+    # 係り受け関係を抽出
+    dependency_relations = []
+    for chunk in chunk_graph:
+        target_index = chunk['to']
+        if target_index >= 0:
+            dependency_relations.append((chunk['word'], chunk_graph[target_index]['word']))
+
+    return dependency_relations
+
 
 
 def build_graph(target_sentence):
@@ -34,5 +48,5 @@ def draw_graph(target_sentence, out_path):
     build_graph(target_sentence).render(out_path, cleanup=True)
 
 
-sentence = str(input())
-draw_graph(sentence, out_path="./out/graph/graph")
+sentence_from_input = str(input())
+draw_graph(sentence_from_input, out_path="./out/graph/graph")
