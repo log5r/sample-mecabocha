@@ -11,7 +11,8 @@
         export LIBRARY_PATH=/opt/homebrew/Cellar/cabocha/0.69/lib:/opt/homebrew/Cellar/mecab/0.996/lib:/opt/homebrew/Cellar/crf++/0.58/lib
         export CPLUS_INCLUDE_PATH=/opt/homebrew/Cellar/cabocha/0.69/include:/opt/homebrew/Cellar/mecab/0.996/include:/opt/homebrew/Cellar/crf++/0.58/include
         ```
-2. `pip` を用いてcabocha-pythonをインストールします。
+2. Homebrewを用いて cabochaを、 `pip` を用いてcabocha-pythonをインストールします。
+   * `brew install cabocha`
    * `pip install cabocha-python` 
    * Apple Silicon 搭載の Mac の場合は以下のようにソースからビルドする必要があるかもしれません。
      * ```shell
